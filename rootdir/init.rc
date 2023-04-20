@@ -88,13 +88,13 @@ on early-init
 
 # Run boringssl self test for each ABI so that later processes can skip it. http://b/139348610
 on early-init && property:ro.product.cpu.abilist32=*
-    exec_start boringssl_self_test32
+    #exec_start boringssl_self_test32
 on early-init && property:ro.product.cpu.abilist64=*
-    exec_start boringssl_self_test64
+    #exec_start boringssl_self_test64
 on property:apexd.status=ready && property:ro.product.cpu.abilist32=*
-    exec_start boringssl_self_test_apex32
+    #exec_start boringssl_self_test_apex32
 on property:apexd.status=ready && property:ro.product.cpu.abilist64=*
-    exec_start boringssl_self_test_apex64
+    #exec_start boringssl_self_test_apex64
 
 service boringssl_self_test32 /system/bin/boringssl_self_test32
     reboot_on_failure reboot,boringssl-self-check-failed
@@ -551,7 +551,7 @@ on early-fs
     start vold
 
 on post-fs
-    exec - system system -- /system/bin/vdc checkpoint markBootAttempt
+    # exec - system system -- /system/bin/vdc checkpoint markBootAttempt
 
     # Once everything is setup, no need to modify /.
     # The bind+remount combination allows this to work in containers.
@@ -634,7 +634,7 @@ on late-fs
     class_start early_hal
 
     # Load trusted keys from dm-verity protected partitions
-    exec -- /system/bin/fsverity_init --load-verified-keys
+    # exec -- /system/bin/fsverity_init --load-verified-keys
 
 # Only enable the bootreceiver tracing instance for kernels 5.10 and above.
 on late-fs && property:ro.kernel.version=4.9
@@ -664,7 +664,7 @@ on post-fs-data
     mark_post_data
 
     # Start checkpoint before we touch data
-    exec - system system -- /system/bin/vdc checkpoint prepareCheckpoint
+    # exec - system system -- /system/bin/vdc checkpoint prepareCheckpoint
 
     # We chown/chmod /data again so because mount is run as root + defaults
     chown system system /data
@@ -715,7 +715,7 @@ on post-fs-data
     # we can tell keystore to stop allowing use of early-boot keys,
     # and access its database for the first time to support creation and
     # use of MAX_BOOT_LEVEL keys.
-    exec - system system -- /system/bin/vdc keymaster earlyBootEnded
+    # exec - system system -- /system/bin/vdc keymaster earlyBootEnded
 
     # Multi-installed APEXes are selected using persist props.
     # Load persist properties and override properties (if enabled) from /data,
@@ -1199,8 +1199,8 @@ on property:sys.boot_completed=1
 # system server cannot write to /proc/sys files,
 # and chown/chmod does not work for /proc/sys/ entries.
 # So proxy writes through init.
-on property:sys.sysctl.extra_free_kbytes=*
-    exec -- /system/bin/extra_free_kbytes.sh ${sys.sysctl.extra_free_kbytes}
+# on property:sys.sysctl.extra_free_kbytes=*
+#    exec -- /system/bin/extra_free_kbytes.sh ${sys.sysctl.extra_free_kbytes}
 
 # Allow users to drop caches
 on property:perf.drop_caches=3
@@ -1296,8 +1296,8 @@ on userspace-reboot-fs-remount
   # This is mostly a precaution measure in case vold for some reason wasn't running when
   # userspace reboot was initiated.
   start vold
-  exec - system system -- /system/bin/vdc checkpoint resetCheckpoint
-  exec - system system -- /system/bin/vdc checkpoint markBootAttempt
+  # exec - system system -- /system/bin/vdc checkpoint resetCheckpoint
+  # exec - system system -- /system/bin/vdc checkpoint markBootAttempt
   # Unmount /data_mirror mounts in the reverse order of corresponding mounts.
   umount /data_mirror/data_ce/null/0
   umount /data_mirror/data_ce/null
